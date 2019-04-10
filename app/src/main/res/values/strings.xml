@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Home Eco</string>
+    <string name="welcome_message">Welcome to Home Eco! Please state the name of the chore manager</string>
+</resources>
