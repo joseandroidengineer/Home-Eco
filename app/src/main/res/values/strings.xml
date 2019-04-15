@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Home Eco</string>
     <string name="welcome_message">Welcome to Home Eco! Please state the name of the chore manager</string>
+    <string name="title_chore_list">Chores</string>
+    <string name="title_chore_detail">chore Detail</string>
 </resources>
