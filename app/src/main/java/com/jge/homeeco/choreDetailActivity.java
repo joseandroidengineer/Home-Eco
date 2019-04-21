@@ -1,5 +1,6 @@
 package com.jge.homeeco;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +13,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jge.homeeco.Database.AppDatabase;
+import com.jge.homeeco.Models.Chore;
+
 /**
  * An activity representing a single chore detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
@@ -22,13 +26,17 @@ public class choreDetailActivity extends AppCompatActivity {
 
     private TextView textViewDescription;
     private EditText editTextDescription;
+    private AppDatabase choreDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chore_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Toolbar toolbar =  findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
+        choreDatabase = AppDatabase.getInstance(this);
+        final Chore choreFromBundle = getIntent().getBundleExtra("bundleChore").getParcelable("bundleChore");
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -44,6 +52,13 @@ public class choreDetailActivity extends AppCompatActivity {
                     textViewDescription.setVisibility(View.VISIBLE);
                     textViewDescription.setText(editTextDescription.getText());
                     editTextDescription.setVisibility(View.GONE);
+                    choreFromBundle.setDescription(textViewDescription.getText().toString());
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            choreDatabase.choreDao().updateChore(choreFromBundle);
+                        }
+                    });
                     Snackbar.make(view, "Text Updated", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
@@ -73,6 +88,7 @@ public class choreDetailActivity extends AppCompatActivity {
             arguments.putString(choreDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(choreDetailFragment.ARG_ITEM_ID));
             arguments.putString("choreTitle", getIntent().getStringExtra("choreTitle"));
+            arguments.putBundle("createdChoreBundle", getIntent().getBundleExtra("createdChoreBundle"));
             arguments.putBundle("bundleChore", getIntent().getBundleExtra("bundleChore"));
             choreDetailFragment fragment = new choreDetailFragment();
             fragment.setArguments(arguments);
@@ -96,5 +112,10 @@ public class choreDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

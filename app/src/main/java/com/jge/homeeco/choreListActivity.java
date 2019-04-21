@@ -57,6 +57,10 @@ public class choreListActivity extends AppCompatActivity implements ListItemClic
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
+        String choreManagerName = getIntent().getStringExtra("choreMasterName");
+        if(!choreManagerName.equals(null)){
+            toolbar.setTitle(choreManagerName);
+        }
 
         FloatingActionButton fab = findViewById(R.id.fab);
         if (findViewById(R.id.chore_detail_container) != null) {
@@ -66,16 +70,6 @@ public class choreListActivity extends AppCompatActivity implements ListItemClic
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-        final ChoreAdapter choreAdapter = new ChoreAdapter(this, mTwoPane);
-        mChoreDatabase = AppDatabase.getInstance(this);
-        ChoreViewModel choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
-        choreViewModel.getChores().observe(this, new Observer<List<Chore>>() {
-            @Override
-            public void onChanged(@Nullable List<Chore> chores) {
-                ArrayList<Chore> choreArrayList = new ArrayList<>(chores);
-                choreAdapter.setChoreData(choreArrayList, getApplicationContext());
-            }
-        });
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -92,10 +86,27 @@ public class choreListActivity extends AppCompatActivity implements ListItemClic
             }
         });
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        final ChoreAdapter  choreAdapter = new ChoreAdapter(this, mTwoPane);
+        mChoreDatabase = AppDatabase.getInstance(this);
+        ChoreViewModel choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
+        choreViewModel.getChores().observe(this, new Observer<List<Chore>>() {
+            @Override
+            public void onChanged(@Nullable List<Chore> chores) {
+                ArrayList<Chore> choreArrayList = new ArrayList<>(chores);
+                choreAdapter.setChoreData(choreArrayList, getApplicationContext());
+            }
+        });
         RecyclerView recyclerView = findViewById(R.id.chore_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
+        choreAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(choreAdapter);
+        super.onResume();
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {

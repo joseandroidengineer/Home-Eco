@@ -54,14 +54,25 @@ public class choreDetailFragment extends Fragment {
                 appBarLayout.setTitle(mItem.content);
             }
         }
-        else if(getArguments().containsKey("choreTitle")){
+        /**This condition is satisfied when a user taps a list item**/
+        else if(getArguments().containsKey("bundleChore")){
             choreDetails = getArguments().getBundle("bundleChore").getParcelable("bundleChore");
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(getArguments().getString("choreTitle"));
+                appBarLayout.setTitle(choreDetails.getTitle());
             }
         }
+        /***This is triggered when a new chore is made*/
+        else if(getArguments().containsKey("createdChoreBundle")){
+            choreDetails = getArguments().getBundle("createdChoreBundle").getParcelable("createdChore");
+            Activity activity = this.getActivity();
+            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            if (appBarLayout != null) {
+                appBarLayout.setTitle(choreDetails.getTitle());
+            }
+        }
+
     }
 
     @Override

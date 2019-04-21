@@ -46,6 +46,7 @@ public class Utilities {
                     /********************/
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("createdChore", chore);
+                    intent.putExtra("createdChoreBundle", bundle);
                     intent.putExtra("choreTitle", choreTitle.getText().toString());
                     intent.putExtra("bundleChore", bundle);
                     Runnable runnable = new Runnable() {

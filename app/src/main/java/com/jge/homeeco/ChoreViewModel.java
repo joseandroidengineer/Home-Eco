@@ -14,10 +14,11 @@ import java.util.List;
 public class ChoreViewModel extends AndroidViewModel {
     private static final String TAG = ChoreViewModel.class.getSimpleName();
     private LiveData<List<Chore>> chores;
+    private AppDatabase database;
 
     public ChoreViewModel(@NonNull Application application) {
         super(application);
-        AppDatabase database= AppDatabase.getInstance(this.getApplication());
+        database= AppDatabase.getInstance(this.getApplication());
         Log.e(TAG, "Retrieving Chores from Database");
         chores = database.choreDao().loadAllChores();
 
@@ -25,5 +26,16 @@ public class ChoreViewModel extends AndroidViewModel {
 
     public LiveData<List<Chore>> getChores(){
         return chores;
+    }
+
+    public void updateChore(final Chore chore){
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                database.choreDao().updateChore(chore);
+            }
+        });
+
+
     }
 }
