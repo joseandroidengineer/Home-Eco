@@ -23,7 +23,7 @@ public class OnboardActivity extends AppCompatActivity {
         FAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getBaseContext(), choreListActivity.class);
+                Intent i = new Intent(getBaseContext(), ChoreListActivity.class);
                 i.putExtra("choreMasterName",editText.getText().toString());
                 startActivity(i);
             }

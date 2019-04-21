@@ -1,6 +1,5 @@
 package com.jge.homeeco;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,9 +13,7 @@ import android.support.v7.app.AlertDialog;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
 
-import java.math.BigInteger;
 import java.util.Random;
-import java.util.UUID;
 
 
 public class Utilities {
@@ -36,7 +33,7 @@ public class Utilities {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(!choreTitle.getText().toString().equals("")){
                     Toast.makeText(context, toastPositive, Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(context, choreDetailActivity.class);
+                    Intent intent = new Intent(context, ChoreDetailActivity.class);
                     /********************/
                     final Chore chore = new Chore();
                     chore.setId(generateUID());

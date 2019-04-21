@@ -14,11 +14,11 @@ import com.jge.homeeco.dummy.DummyContent;
 
 /**
  * A fragment representing a single chore detail screen.
- * This fragment is either contained in a {@link choreListActivity}
- * in two-pane mode (on tablets) or a {@link choreDetailActivity}
+ * This fragment is either contained in a {@link ChoreListActivity}
+ * in two-pane mode (on tablets) or a {@link ChoreDetailActivity}
  * on handsets.
  */
-public class choreDetailFragment extends Fragment {
+public class ChoreDetailFragment extends Fragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -35,7 +35,7 @@ public class choreDetailFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public choreDetailFragment() {
+    public ChoreDetailFragment() {
     }
 
     @Override
@@ -58,7 +58,7 @@ public class choreDetailFragment extends Fragment {
         else if(getArguments().containsKey("bundleChore")){
             choreDetails = getArguments().getBundle("bundleChore").getParcelable("bundleChore");
             Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            CollapsingToolbarLayout appBarLayout = activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setTitle(choreDetails.getTitle());
             }

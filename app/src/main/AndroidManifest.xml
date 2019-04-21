@@ -11,17 +11,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".choreListActivity"
+            android:name=".ChoreListActivity"
             android:label="@string/title_chore_list"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".choreDetailActivity"
+            android:name=".ChoreDetailActivity"
             android:label="@string/title_chore_detail"
-            android:parentActivityName=".choreListActivity"
+            android:parentActivityName=".ChoreListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jge.homeeco.choreListActivity" />
+                android:value="com.jge.homeeco.ChoreListActivity" />
         </activity>
         <activity
             android:name=".OnboardActivity"

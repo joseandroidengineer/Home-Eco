@@ -1,6 +1,5 @@
 package com.jge.homeeco;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,9 +19,9 @@ import com.jge.homeeco.Models.Chore;
  * An activity representing a single chore detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link choreListActivity}.
+ * in a {@link ChoreListActivity}.
  */
-public class choreDetailActivity extends AppCompatActivity {
+public class ChoreDetailActivity extends AppCompatActivity {
 
     private TextView textViewDescription;
     private EditText editTextDescription;
@@ -35,10 +34,19 @@ public class choreDetailActivity extends AppCompatActivity {
         Toolbar toolbar =  findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
         choreDatabase = AppDatabase.getInstance(this);
-        final Chore choreFromBundle = getIntent().getBundleExtra("bundleChore").getParcelable("bundleChore");
+        Chore choreFromBundle = new Chore();
+        if (getIntent().getBundleExtra("bundleChore").getParcelable("bundleChore")!= null){
+            choreFromBundle = getIntent().getBundleExtra("bundleChore").getParcelable("bundleChore");
+        }else if((getIntent().getBundleExtra("createdChoreBundle")!= null)){
+            Intent intent = getIntent();
+            Bundle bundle = intent.getBundleExtra("createdChoreBundle");
+            choreFromBundle = bundle.getParcelable("createdChore");
+        }
+
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final Chore finalChoreFromBundle = choreFromBundle;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,11 +60,11 @@ public class choreDetailActivity extends AppCompatActivity {
                     textViewDescription.setVisibility(View.VISIBLE);
                     textViewDescription.setText(editTextDescription.getText());
                     editTextDescription.setVisibility(View.GONE);
-                    choreFromBundle.setDescription(textViewDescription.getText().toString());
+                    finalChoreFromBundle.setDescription(textViewDescription.getText().toString());
                     AppExecutors.getInstance().diskIO().execute(new Runnable() {
                         @Override
                         public void run() {
-                            choreDatabase.choreDao().updateChore(choreFromBundle);
+                            choreDatabase.choreDao().updateChore(finalChoreFromBundle);
                         }
                     });
                     Snackbar.make(view, "Text Updated", Snackbar.LENGTH_LONG)
@@ -85,12 +93,15 @@ public class choreDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(choreDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(choreDetailFragment.ARG_ITEM_ID));
+            arguments.putString(ChoreDetailFragment.ARG_ITEM_ID,
+                    getIntent().getStringExtra(ChoreDetailFragment.ARG_ITEM_ID));
             arguments.putString("choreTitle", getIntent().getStringExtra("choreTitle"));
-            arguments.putBundle("createdChoreBundle", getIntent().getBundleExtra("createdChoreBundle"));
-            arguments.putBundle("bundleChore", getIntent().getBundleExtra("bundleChore"));
-            choreDetailFragment fragment = new choreDetailFragment();
+            if(getIntent().getBundleExtra("createdChoreBundle")!= null){
+                arguments.putBundle("createdChoreBundle", getIntent().getBundleExtra("createdChoreBundle"));
+            }else if(getIntent().getBundleExtra("bundleChore")!= null){
+                arguments.putBundle("bundleChore", getIntent().getBundleExtra("bundleChore"));
+            }
+            ChoreDetailFragment fragment = new ChoreDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.chore_detail_container, fragment)
@@ -108,7 +119,7 @@ public class choreDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, choreListActivity.class));
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);

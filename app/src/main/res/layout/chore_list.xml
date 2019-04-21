@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".choreListActivity"
+    tools:context=".ChoreListActivity"
     tools:listitem="@layout/chore_list_content" />
