@@ -3,4 +3,11 @@
     <string name="welcome_message">Welcome to Home Eco! Please state the name of the chore manager</string>
     <string name="title_chore_list">Chores</string>
     <string name="title_chore_detail">chore Detail</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 </resources>
