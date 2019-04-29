@@ -22,12 +22,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jge.homeeco.Adapters.ChoreAdapter;
+import com.jge.homeeco.Adapters.PersonAdapter;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
+import com.jge.homeeco.Models.Person;
+import com.jge.homeeco.ViewModels.ChoreViewModel;
+import com.jge.homeeco.ViewModels.PersonViewModel;
 import com.jge.homeeco.dummy.DummyContent;
 
 import java.util.ArrayList;
@@ -55,7 +60,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nav_drawer_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
         /*****Navigation Drawer*****/
@@ -68,12 +73,30 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         navigationView.setNavigationItemSelectedListener(this);
         /***Navigation Drawer*****/
         String choreManagerName = getIntent().getStringExtra("choreMasterName");
+
         if(choreManagerName != null){
             toolbar.setTitle(choreManagerName);
             View headerView = navigationView.getHeaderView(0);
-            TextView tv = headerView.findViewById(R.id.chore_master_name);
+            TextView tv = navigationView.findViewById(R.id.chore_master_name);
             tv.setText(choreManagerName);
         }
+
+        LinearLayout ll = navigationView.findViewById(R.id.add_person);
+
+        ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Utilities.createPersonAlertDialog(
+                        "Add Person",
+                        ChoreListActivity.this,
+                        PersonDetailActivity.class,
+                        "Create Person",
+                        "Cancel",
+                        "Person creation cancelled",
+                        "Should Create Person",
+                        "You must add a person's name!" ).show();
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         if (findViewById(R.id.chore_detail_container) != null) {
@@ -89,6 +112,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
                 AlertDialog.Builder alertDialog = Utilities.createAlertDialog(
                         "New chore",
                         ChoreListActivity.this,
+                        ChoreDetailActivity.class,
                         "Create Chore",
                         "Cancel",
                         "Chore Cancelled",
@@ -97,6 +121,9 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
                 alertDialog.show();
             }
         });
+
+        //RecyclerView personList = findViewById(R.id.chore_list);
+        //setUpPersonAdapterAndRecyclerView(personList);
     }
 
     @Override
@@ -116,12 +143,30 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         recyclerView.setHasFixedSize(true);
         choreAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(choreAdapter);
+
+        RecyclerView personList = findViewById(R.id.person_list);
+        setUpPersonAdapterAndRecyclerView(personList);
         super.onResume();
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
-        recyclerView.setAdapter(new ChoreAdapter(this, mTwoPane));
+    private void setUpPersonAdapterAndRecyclerView(final RecyclerView recyclerView){
+        final PersonAdapter personAdapter = new PersonAdapter(this);
+        mChoreDatabase = AppDatabase.getInstance(this);
+        PersonViewModel personViewModel = ViewModelProviders.of(this).get(PersonViewModel.class);
+
+        personViewModel.getPersons().observe(this, new Observer<List<Person>>() {
+            @Override
+            public void onChanged(@Nullable List<Person> people) {
+                ArrayList<Person> personArrayList = new ArrayList<>(people);
+                personAdapter.setPersonData(personArrayList);
+                personAdapter.notifyDataSetChanged();
+            }
+        });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        personAdapter.notifyDataSetChanged();
+        recyclerView.setAdapter(personAdapter);
     }
 
     @Override
@@ -142,8 +187,12 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
             Toast.makeText(this,""+choreIndexClicked.getTitle(), Toast.LENGTH_SHORT).show();
             startActivity(intent);
         }
+    }
 
-
+    @Override
+    public void onListItemClick(Person personIndexClicked) {
+        Intent intent = new Intent(this, PersonDetailActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -151,8 +200,9 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         // Handle navigation view item clicks here.
         int id = menuItem.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.add_person) {
+
+
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

@@ -11,6 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".AwardsActivity"
+            android:label="@string/title_activity_awards"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".PersonDetailActivity" />
+        <activity
             android:name=".ChoreListActivity"
             android:label="@string/title_chore_list"
             android:theme="@style/AppTheme.NoActionBar" />

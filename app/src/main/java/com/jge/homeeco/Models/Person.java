@@ -1,17 +1,21 @@
 package com.jge.homeeco.Models;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-public class Roommate implements Parcelable {
+@Entity(tableName = "person")
+public class Person implements Parcelable {
     private String name;
+
+    @PrimaryKey(autoGenerate =  true)
     private int id;
     private int pointsAssigned;
-    private ArrayList<Chore> chores;
 
-    public Roommate(){
+    public Person(){
 
     }
 
@@ -39,13 +43,6 @@ public class Roommate implements Parcelable {
         this.pointsAssigned = pointsAssigned;
     }
 
-    public ArrayList<Chore> getChores() {
-        return chores;
-    }
-
-    public void setChores(ArrayList<Chore> chores) {
-        this.chores = chores;
-    }
 
     @Override
     public int describeContents() {
@@ -56,25 +53,23 @@ public class Roommate implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
         parcel.writeString(name);
-        parcel.writeArray(chores.toArray());
         parcel.writeInt(pointsAssigned);
 
     }
 
-    public static final Parcelable.Creator<Roommate> CREATOR = new Parcelable.Creator<Roommate>() {
-        public Roommate createFromParcel(Parcel in){
-            return new Roommate(in);
+    public static final Parcelable.Creator<Person> CREATOR = new Parcelable.Creator<Person>() {
+        public Person createFromParcel(Parcel in){
+            return new Person(in);
         }
 
-        public Roommate[] newArray(int size){
-            return new Roommate[size];
+        public Person[] newArray(int size){
+            return new Person[size];
         }
     };
 
-    private Roommate(Parcel in){
+    private Person(Parcel in){
         id = in.readInt();
         name = in.readString();
-        chores = in.readArrayList(Chore.class.getClassLoader());
         pointsAssigned = in.readInt();
     }
 }

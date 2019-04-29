@@ -6,25 +6,23 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.jge.homeeco.ListItemClickListener;
-import com.jge.homeeco.Models.Chore;
+import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.R;
 
 import java.util.ArrayList;
 
-public class ChoreAdapterViewHolder extends RecyclerView.ViewHolder {
+public class PersonAdapterViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView choreNameTextView;
-    public ChoreAdapterViewHolder(@NonNull View itemView, final ListItemClickListener mOnClickListener, final ArrayList<Chore> chores ) {
+    public TextView personNameTextView;
+    public PersonAdapterViewHolder(@NonNull View itemView, final ListItemClickListener mOnClickListener, final ArrayList<Person> persons) {
         super(itemView);
-        choreNameTextView = itemView.findViewById(R.id.content);
+        personNameTextView = itemView.findViewById(R.id.person_name_tv);
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int position = getAdapterPosition();
-                mOnClickListener.onListItemClick(chores.get(position));
+                mOnClickListener.onListItemClick(persons.get(position));
             }
         });
     }
-
-
 }

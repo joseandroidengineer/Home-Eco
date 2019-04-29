@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
+import com.jge.homeeco.Models.Person;
 
 import java.util.Random;
 
@@ -20,7 +21,7 @@ public class Utilities {
 
     public static AppDatabase mChoreDatabase;
 
-    public static android.support.v7.app.AlertDialog.Builder createAlertDialog(String title, final Context context,String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
+    public static android.support.v7.app.AlertDialog.Builder createAlertDialog(String title, final Context context, final Class activityToBeCalled, String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
         mChoreDatabase = AppDatabase.getInstance(context);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
         alertDialog.setTitle(positive);
@@ -33,7 +34,7 @@ public class Utilities {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(!choreTitle.getText().toString().equals("")){
                     Toast.makeText(context, toastPositive, Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(context, ChoreDetailActivity.class);
+                    Intent intent = new Intent(context, activityToBeCalled);
                     /********************/
                     final Chore chore = new Chore();
                     chore.setId(generateUID());
@@ -71,9 +72,59 @@ public class Utilities {
 
     }
 
+
     public static int generateUID(){
         Random random = new Random();
         return random.nextInt();
 
+    }
+
+    public static android.support.v7.app.AlertDialog.Builder createPersonAlertDialog(String title, final Context context, final Class activityToBeCalled, String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
+        mChoreDatabase = AppDatabase.getInstance(context);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
+        alertDialog.setTitle(positive);
+        final EditText personName = new EditText(context);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        personName.setLayoutParams(lp);
+        alertDialog.setView(personName);
+        alertDialog.setPositiveButton(title, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(!personName.getText().toString().equals("")){
+                    Toast.makeText(context, toastPositive, Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(context, activityToBeCalled);
+                    /********************/
+                    final Person person = new Person();
+                    person.setId(generateUID());
+                    person.setPointsAssigned(0);
+                    person.setName(personName.getText().toString());
+                    /********************/
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("createdPerson", person);
+                    intent.putExtra("createdPersonBundle", bundle);
+                    intent.putExtra("personName", personName.getText().toString());
+                    intent.putExtra("bundleChore", bundle);
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            mChoreDatabase.personDao().insertPerson(person);
+                        }
+                    };
+                    AppExecutors.getInstance().diskIO().execute(runnable);
+                    context.startActivity(intent);
+                }else{
+                    Toast.makeText(context, toastConditional, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        alertDialog.setNegativeButton(negative, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(context, toastCancelled, Toast.LENGTH_LONG).show();
+                dialogInterface.cancel();
+            }
+        });
+        return alertDialog;
     }
 }

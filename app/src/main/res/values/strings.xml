@@ -10,4 +10,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="remove_user_action">Remove User</string>
+    <string name="award_points_action">Award Points</string>
+    <string name="claim_prize_action">Claim Prize</string>
+    <string name="title_activity_awards">AwardsActivity</string>
 </resources>
