@@ -54,6 +54,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
      */
     private boolean mTwoPane;
     private AppDatabase mChoreDatabase;
+    private ArrayList<Person> people;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,6 +160,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
             public void onChanged(@Nullable List<Person> people) {
                 ArrayList<Person> personArrayList = new ArrayList<>(people);
                 personAdapter.setPersonData(personArrayList);
+                people = personArrayList;
                 personAdapter.notifyDataSetChanged();
             }
         });
@@ -192,6 +194,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
     @Override
     public void onListItemClick(Person personIndexClicked) {
         Intent intent = new Intent(this, PersonDetailActivity.class);
+        intent.putExtra("person",personIndexClicked);
         startActivity(intent);
     }
 

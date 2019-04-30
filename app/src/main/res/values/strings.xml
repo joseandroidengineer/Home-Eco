@@ -14,4 +14,5 @@
     <string name="award_points_action">Award Points</string>
     <string name="claim_prize_action">Claim Prize</string>
     <string name="title_activity_awards">AwardsActivity</string>
+    <string name="title_activity_prize">PrizeActivity</string>
 </resources>
