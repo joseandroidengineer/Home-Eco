@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
 
@@ -126,5 +127,50 @@ public class Utilities {
             }
         });
         return alertDialog;
+    }
+
+    public static android.support.v7.app.AlertDialog.Builder addPoints(String title, final Context context, String positive, String negative, final String toastPositive, final Person person, final String toastCancelled, final String toastConditional, final TextView textViewToUpdate){
+        mChoreDatabase = AppDatabase.getInstance(context);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
+        alertDialog.setTitle(title);
+        final EditText pointsToAddEdit = new EditText(context);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        pointsToAddEdit.setLayoutParams(lp);
+        alertDialog.setView(pointsToAddEdit);
+        alertDialog.setPositiveButton(positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(!pointsToAddEdit.getText().toString().equals("")){
+                    final int totalAmountOfPoints = addToCount(person.getPointsAssigned(), (Integer.parseInt(pointsToAddEdit.getText().toString())));
+                    Toast.makeText(context, toastPositive, Toast.LENGTH_LONG).show();
+                    person.setPointsAssigned(totalAmountOfPoints);
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            mChoreDatabase.personDao().updatePerson(person);
+                        }
+                    };
+                    AppExecutors.getInstance().diskIO().execute(runnable);
+                    textViewToUpdate.setText("Amount of Points: "+person.getPointsAssigned());
+                }else{
+                    Toast.makeText(context, toastConditional, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        alertDialog.setNegativeButton(negative, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(context, toastCancelled, Toast.LENGTH_LONG).show();
+                dialogInterface.cancel();
+            }
+        });
+        return alertDialog;
+    }
+
+    private static int addToCount(int pointsToAdd, int pointsAlreadyThere){
+        int total;
+        total = pointsToAdd + pointsAlreadyThere;
+        return total;
     }
 }

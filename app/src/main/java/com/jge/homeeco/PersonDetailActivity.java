@@ -1,19 +1,22 @@
 package com.jge.homeeco;
 
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Person;
 
 public class PersonDetailActivity extends AppCompatActivity {
 
-    AppDatabase database;
-    Person person;
+    private AppDatabase database;
+    private Person person;
+    private TextView amtOfPoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +27,8 @@ public class PersonDetailActivity extends AppCompatActivity {
             getActionBar().setTitle(person.getName());
         }
         database = AppDatabase.getInstance(this);
-
-
-
+        amtOfPoints = findViewById(R.id.amt_of_points);
+        amtOfPoints.setText("Amount of Points "+ person.getPointsAssigned());
     }
 
     @Override
@@ -45,7 +47,9 @@ public class PersonDetailActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_award_points) {
-            //Should open up an alert box to add points to the user.
+            //TODO: Need to fix saving the points correctly. May need to implement onSavedInstance.
+            AlertDialog alertDialog = Utilities.addPoints("Add Points", this,"Add points", "Cancel","Points added", person, "Adding points cancelled","Make sure to add points",amtOfPoints ).create();
+            alertDialog.show();
             return true;
         }else if (id == R.id.action_claim_prize) {
 
