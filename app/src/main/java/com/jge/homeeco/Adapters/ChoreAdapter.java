@@ -6,7 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
+import com.jge.homeeco.AppExecutors;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.ListItemClickListener;
 import com.jge.homeeco.Models.Chore;
@@ -39,10 +41,22 @@ public class ChoreAdapter  extends RecyclerView.Adapter<ChoreAdapterViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull ChoreAdapterViewHolder choreAdapterViewHolder, int i) {
-        Chore chore = chores.get(i);
+        final Chore chore = chores.get(i);
         mChoreDatabase = AppDatabase.getInstance(context);
+        choreAdapterViewHolder.choreCheckBox.setChecked(chore.isCompleted());
+        choreAdapterViewHolder.choreCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                chore.setCompleted(b);
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChoreDatabase.choreDao().updateChore(chore);
+                    }
+                });
+            }
+        });
         choreAdapterViewHolder.choreNameTextView.setText(chore.getTitle());
-
     }
 
     @Override

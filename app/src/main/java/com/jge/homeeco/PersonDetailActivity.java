@@ -70,4 +70,10 @@ public class PersonDetailActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("points",person.getPointsAssigned());
+        super.onSaveInstanceState(outState);
+    }
 }
