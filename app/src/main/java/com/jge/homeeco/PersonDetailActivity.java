@@ -28,7 +28,9 @@ public class PersonDetailActivity extends AppCompatActivity {
         }
         database = AppDatabase.getInstance(this);
         amtOfPoints = findViewById(R.id.amt_of_points);
-        amtOfPoints.setText("Amount of Points "+ person.getPointsAssigned());
+        if(person != null){
+            amtOfPoints.setText("Amount of Points "+ person.getPointsAssigned());
+        }
     }
 
     @Override

@@ -105,6 +105,7 @@ public class Utilities {
                     intent.putExtra("createdPersonBundle", bundle);
                     intent.putExtra("personName", personName.getText().toString());
                     intent.putExtra("bundleChore", bundle);
+                    intent.putExtra("person", person);
                     Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
