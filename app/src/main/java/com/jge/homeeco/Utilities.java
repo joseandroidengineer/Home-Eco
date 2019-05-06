@@ -3,6 +3,7 @@ package com.jge.homeeco;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.widget.EditText;
@@ -14,13 +15,12 @@ import android.support.v7.app.AlertDialog;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
-
-import java.util.Random;
+import com.jge.homeeco.Models.Prize;
 
 
 public class Utilities {
 
-    public static AppDatabase mChoreDatabase;
+    private static AppDatabase mChoreDatabase;
 
     public static android.support.v7.app.AlertDialog.Builder createAlertDialog(String title, final Context context, final Class activityToBeCalled, String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
         mChoreDatabase = AppDatabase.getInstance(context);
@@ -38,7 +38,7 @@ public class Utilities {
                     Intent intent = new Intent(context, activityToBeCalled);
                     /********************/
                     final Chore chore = new Chore();
-                    chore.setId(generateUID());
+                    chore.setId(generateUIDForChore(context));
                     chore.setCompleted(false);
                     chore.setDescription("Click the blue button to edit the description of your ");
                     chore.setTitle(choreTitle.getText().toString());
@@ -74,10 +74,64 @@ public class Utilities {
     }
 
 
-    public static int generateUID(){
-        Random random = new Random();
-        return random.nextInt();
+    private static int generateUIDForChore(Context context){
+        return returnSharedPrefCountIdsForChores(context);
+    }
 
+    private  static int generateUIDForPerson(Context context){
+        return returnSharedPrefCountIdsForPersons(context);
+    }
+
+
+    private static int returnSharedPrefCountIdsForChores(Context context){
+        int countIds = 0;
+        int restoredInts= 0;
+        SharedPreferences.Editor editor = context.getSharedPreferences("choreIds", Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = context.getSharedPreferences("choreIds",Context.MODE_PRIVATE);
+        if(prefs == null){
+            editor.putInt("choreCountIds",countIds);
+            editor.apply();
+        }else {
+            restoredInts = prefs.getInt("choreCountIds", 0);
+            restoredInts = restoredInts + 1;
+            editor.putInt("choreCountIds", restoredInts);
+            editor.apply();
+        }
+        return restoredInts;
+    }
+
+    private static int returnSharedPrefCountIdsForPersons(Context context){
+        int countIds = 0;
+        int restoredInts= 0;
+        SharedPreferences.Editor editor = context.getSharedPreferences("personIds", Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = context.getSharedPreferences("personIds",Context.MODE_PRIVATE);
+        if(prefs == null){
+            editor.putInt("personCountIds",countIds);
+            editor.apply();
+        }else {
+            restoredInts = prefs.getInt("personCountIds", 0);
+            restoredInts = restoredInts + 1;
+            editor.putInt("personCountIds", restoredInts);
+            editor.apply();
+        }
+        return restoredInts;
+    }
+
+    private static int generateUIDForPrize(Context context){
+        int countIds = 0;
+        int restoredInts= 0;
+        SharedPreferences.Editor editor = context.getSharedPreferences("prizeIds", Context.MODE_PRIVATE).edit();
+        SharedPreferences prefs = context.getSharedPreferences("prizeIds",Context.MODE_PRIVATE);
+        if(prefs == null){
+            editor.putInt("prizeCountIds",countIds);
+            editor.apply();
+        }else {
+            restoredInts = prefs.getInt("prizeCountIds", 0);
+            restoredInts = restoredInts + 1;
+            editor.putInt("prizeCountIds", restoredInts);
+            editor.apply();
+        }
+        return restoredInts;
     }
 
     public static android.support.v7.app.AlertDialog.Builder createPersonAlertDialog(String title, final Context context, final Class activityToBeCalled, String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
@@ -96,7 +150,7 @@ public class Utilities {
                     Intent intent = new Intent(context, activityToBeCalled);
                     /********************/
                     final Person person = new Person();
-                    person.setId(generateUID());
+                    person.setId(generateUIDForPerson(context));
                     person.setPointsAssigned(0);
                     person.setName(personName.getText().toString());
                     /********************/
@@ -159,6 +213,53 @@ public class Utilities {
             }
         });
 
+        alertDialog.setNegativeButton(negative, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(context, toastCancelled, Toast.LENGTH_LONG).show();
+                dialogInterface.cancel();
+            }
+        });
+        return alertDialog;
+    }
+
+    public static AlertDialog.Builder addPrize(String title, final Context context, String positive, String negative, final String toastPositive, final String toastCancelled, final String toastConditional){
+        mChoreDatabase = AppDatabase.getInstance(context);
+        final Prize prize = new Prize();
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
+        alertDialog.setTitle(title);
+        final EditText editText = new EditText(context);
+        editText.setHint("Name of prize");
+        final EditText editTextPoints = new EditText(context);
+        editTextPoints.setHint("Points needed to get prize");
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        editText.setLayoutParams(lp);
+        editTextPoints.setLayoutParams(lp);
+        alertDialog.setView(editText);
+        alertDialog.setPositiveButton(positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(!editText.getText().toString().equals("")){
+                    prize.setName(editText.getText().toString());
+                    prize.setId(generateUIDForPrize(context));
+                    Toast.makeText(context, toastPositive,Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(context,toastConditional, Toast.LENGTH_SHORT).show();
+                }
+
+                if(!editTextPoints.getText().toString().equals("")){
+                    prize.setPoints((Integer.parseInt(editTextPoints.getText().toString())));
+                }
+
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChoreDatabase.prizeDao().insertPrize(prize);
+                    }
+                });
+            }
+
+        });
         alertDialog.setNegativeButton(negative, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

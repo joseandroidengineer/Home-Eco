@@ -15,8 +15,9 @@ import android.util.Log;
 
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
+import com.jge.homeeco.Models.Prize;
 
-@Database(entities = {Chore.class, Person.class}, version = 2, exportSchema = false)
+@Database(entities = {Chore.class, Person.class, Prize.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
 
@@ -29,7 +30,7 @@ public abstract class AppDatabase extends RoomDatabase {
         if(sInstance == null){
             synchronized (LOCK){
                 Log.d(LOG_TAG, "Creating new database instance");
-                sInstance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, AppDatabase.DATABASE_NAME).fallbackToDestructiveMigration().build();
+                sInstance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, AppDatabase.DATABASE_NAME).addMigrations(MIGRATION_2_3).build();
             }
         }
         Log.e(LOG_TAG, "Getting the database instance");
@@ -43,7 +44,18 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    static final Migration MIGRATION_2_3 = new Migration(2,3){
+        @Override
+        public void migrate(SupportSQLiteDatabase database){
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'prize'('id' INTEGER NOT NULL," +"'name' TEXT,"+"'points' INTEGER NOT NULL, PRIMARY KEY('id'))");
+        }
+    };
+
+
+
     public abstract ChoreDao choreDao();
 
     public abstract PersonDao personDao();
+
+    public abstract PrizeDao prizeDao();
 }

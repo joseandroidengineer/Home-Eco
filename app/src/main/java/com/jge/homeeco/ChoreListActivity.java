@@ -31,6 +31,7 @@ import com.jge.homeeco.Adapters.PersonAdapter;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
+import com.jge.homeeco.Models.Prize;
 import com.jge.homeeco.ViewModels.ChoreViewModel;
 import com.jge.homeeco.ViewModels.PersonViewModel;
 import com.jge.homeeco.dummy.DummyContent;
@@ -196,6 +197,11 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         Intent intent = new Intent(this, PersonDetailActivity.class);
         intent.putExtra("person",personIndexClicked);
         startActivity(intent);
+    }
+
+    @Override
+    public void onListItemClick(Prize prizeItemClicked) {
+
     }
 
     @Override
