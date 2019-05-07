@@ -43,16 +43,11 @@ public class ChoreAdapter  extends RecyclerView.Adapter<ChoreAdapterViewHolder>{
     public void onBindViewHolder(@NonNull ChoreAdapterViewHolder choreAdapterViewHolder, int i) {
         final Chore chore = chores.get(i);
         mChoreDatabase = AppDatabase.getInstance(context);
-        //choreAdapterViewHolder.choreCheckBox.setChecked(chore.isCompleted());
+        choreAdapterViewHolder.choreCheckBox.setChecked(chore.isCompleted());
         choreAdapterViewHolder.choreCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 chore.setCompleted(b);
-                if(chore.isCompleted()){
-                    chore.setCompleted(false);
-                }else if(!chore.isCompleted()){
-                    chore.setCompleted(true);
-                }
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {

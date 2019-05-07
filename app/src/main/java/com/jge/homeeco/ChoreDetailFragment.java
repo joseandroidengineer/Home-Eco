@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jge.homeeco.Models.Chore;
@@ -79,9 +80,16 @@ public class ChoreDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.chore_detail, container, false);
+        ImageView imageView;
 
         if (choreDetails != null) {
             ((TextView) rootView.findViewById(R.id.chore_detail)).setText(choreDetails.getDescription());
+            imageView = rootView.findViewById(R.id.checkCloseIV);
+            if(choreDetails.isCompleted()){
+                imageView.setImageResource(R.drawable.baseline_check_24);
+            }else{
+                imageView.setImageResource(R.drawable.baseline_close_24);
+            }
         }
         return rootView;
     }
