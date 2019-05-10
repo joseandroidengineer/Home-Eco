@@ -27,6 +27,7 @@ public class Utilities {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
         alertDialog.setTitle(positive);
         final EditText choreTitle = new EditText(context);
+        choreTitle.setTextColor(context.getResources().getColor(R.color.whiteColor));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         choreTitle.setLayoutParams(lp);
         alertDialog.setView(choreTitle);
@@ -139,6 +140,7 @@ public class Utilities {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
         alertDialog.setTitle(positive);
         final EditText personName = new EditText(context);
+        personName.setTextColor(context.getResources().getColor(R.color.whiteColor));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         personName.setLayoutParams(lp);
         alertDialog.setView(personName);
@@ -189,6 +191,7 @@ public class Utilities {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
         alertDialog.setTitle(title);
         final EditText pointsToAddEdit = new EditText(context);
+        pointsToAddEdit.setTextColor(context.getResources().getColor(R.color.whiteColor));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         pointsToAddEdit.setLayoutParams(lp);
         alertDialog.setView(pointsToAddEdit);
@@ -229,6 +232,7 @@ public class Utilities {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
         alertDialog.setTitle(title);
         final EditText editText = new EditText(context);
+        editText.setTextColor(context.getResources().getColor(R.color.whiteColor));
         editText.setHint("Name of prize");
         final EditText editTextPoints = new EditText(context);
         editTextPoints.setHint("Points needed to get prize");
