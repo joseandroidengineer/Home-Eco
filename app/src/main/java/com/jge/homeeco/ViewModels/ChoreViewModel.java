@@ -36,7 +36,9 @@ public class ChoreViewModel extends AndroidViewModel {
                 database.choreDao().updateChore(chore);
             }
         });
+    }
 
-
+    public LiveData<Chore> getChoreById(int id){
+        return database.choreDao().loadChoreById(id);
     }
 }

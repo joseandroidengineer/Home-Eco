@@ -1,10 +1,12 @@
 package com.jge.homeeco;
 
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.ContextThemeWrapper;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -16,6 +18,7 @@ import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.Models.Prize;
+import com.jge.homeeco.ViewModels.PersonViewModel;
 
 
 public class Utilities {
@@ -186,7 +189,7 @@ public class Utilities {
         return alertDialog;
     }
 
-    public static android.support.v7.app.AlertDialog.Builder addPoints(String title, final Context context, String positive, String negative, final String toastPositive, final Person person, final String toastCancelled, final String toastConditional, final TextView textViewToUpdate){
+    public static android.support.v7.app.AlertDialog.Builder addPoints(String title, final Context context, String positive, String negative, final String toastPositive, final Person person, final String toastCancelled, final String toastConditional, final TextView textViewToUpdate, final PersonViewModel personViewModel){
         mChoreDatabase = AppDatabase.getInstance(context);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.myDialog));
         alertDialog.setTitle(title);
@@ -209,6 +212,12 @@ public class Utilities {
                         }
                     };
                     AppExecutors.getInstance().diskIO().execute(runnable);
+                    /**personViewModel.getPersonById(person.getId()).observe(this, new Observer<Person>() {
+                        @Override
+                        public void onChanged(@Nullable Person person) {
+                            textViewToUpdate.setText("Amount of points !: " + person.getPointsAssigned());
+                        }
+                    });*/
                     textViewToUpdate.setText("Amount of Points: "+person.getPointsAssigned());
                 }else{
                     Toast.makeText(context, toastConditional, Toast.LENGTH_LONG).show();

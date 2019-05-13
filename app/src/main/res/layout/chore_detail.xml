@@ -42,6 +42,7 @@
                     android:padding="16dp"
                     android:src="@drawable/baseline_close_24" />
                 <Button
+                    android:id="@+id/assign_button"
                     android:layout_gravity="center"
                     android:layout_marginLeft="200dp"
                     android:text="Assign Chore"

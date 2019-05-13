@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.jge.homeeco.AppExecutors;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Person;
 
@@ -26,5 +27,28 @@ public class PersonViewModel extends AndroidViewModel {
 
     public LiveData<List<Person>> getPersons(){
         return persons;
+    }
+
+    public void updatePerson(final Person person){
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                database.personDao().updatePerson(person);
+            }
+        });
+
+    }
+
+    public void deletePerson(final Person person){
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                database.personDao().deletePerson(person);
+            }
+        });
+    }
+
+    public LiveData<Person> getPersonById(int id){
+        return database.personDao().loadPersonById(id);
     }
 }

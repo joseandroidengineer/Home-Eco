@@ -166,6 +166,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
             }
         });
 
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         personAdapter.notifyDataSetChanged();
