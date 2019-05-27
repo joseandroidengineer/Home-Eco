@@ -90,6 +90,7 @@ public class ChoreDetailFragment extends Fragment {
         ImageView imageView;
         Button button;
         choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
+        final Bundle bundle = new Bundle();
 
         if (choreDetails != null) {
             ((TextView) rootView.findViewById(R.id.chore_detail)).setText(choreDetails.getDescription());
@@ -98,7 +99,10 @@ public class ChoreDetailFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity( new Intent(getContext(), PersonListActivity.class));
+                    bundle.putInt("choreId",choreDetails.getId());
+                    Intent intent = new Intent(getContext(), PersonListActivity.class);
+                    intent.putExtra("choreIdBundle",bundle);
+                    startActivity(intent);
                 }
             });
             if(choreDetails.isCompleted()){

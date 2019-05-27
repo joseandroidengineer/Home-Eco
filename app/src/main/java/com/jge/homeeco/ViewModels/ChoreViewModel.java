@@ -22,7 +22,6 @@ public class ChoreViewModel extends AndroidViewModel {
         database= AppDatabase.getInstance(this.getApplication());
         Log.e(TAG, "Retrieving Chores from Database");
         chores = database.choreDao().loadAllChores();
-
     }
 
     public LiveData<List<Chore>> getChores(){
