@@ -24,6 +24,7 @@ import com.jge.homeeco.ViewModels.PersonViewModel;
 public class Utilities {
 
     private static AppDatabase mChoreDatabase;
+    private static final String BASE_URL = "https://samples.openweathermap.org/data/2.5/forecast?id=524901&appid=b1b15e88fa797225412429c1c50c122a1";
 
     public static android.support.v7.app.AlertDialog.Builder createAlertDialog(String title, final Context context, final Class activityToBeCalled, String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
         mChoreDatabase = AppDatabase.getInstance(context);
@@ -287,5 +288,10 @@ public class Utilities {
         int total;
         total = pointsToAdd + pointsAlreadyThere;
         return total;
+    }
+
+    public static String NetworkWeatherCall(){
+        return BASE_URL;
+
     }
 }
