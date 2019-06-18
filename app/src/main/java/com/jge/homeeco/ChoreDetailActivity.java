@@ -45,7 +45,7 @@ public class ChoreDetailActivity extends AppCompatActivity {
 
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         final Chore finalChoreFromBundle = choreFromBundle;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +70,6 @@ public class ChoreDetailActivity extends AppCompatActivity {
                     Snackbar.make(view, "Text Updated", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
-
             }
         });
 
