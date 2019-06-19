@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -14,17 +16,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
 
+import com.google.gson.JsonObject;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.Models.Prize;
 import com.jge.homeeco.ViewModels.PersonViewModel;
 
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+
 
 public class Utilities {
 
     private static AppDatabase mChoreDatabase;
-    private static final String BASE_URL = "https://samples.openweathermap.org/data/2.5/forecast?id=524901&appid=b1b15e88fa797225412429c1c50c122a1";
+    public static String BASE_URL = "https://api.darksky.net/forecast/53a4a3405d35764d25704f64c504dff7/";
+    private static final String TAG = NetworkDarkWeatherCall.class.getSimpleName();
+
 
     public static android.support.v7.app.AlertDialog.Builder createAlertDialog(String title, final Context context, final Class activityToBeCalled, String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
         mChoreDatabase = AppDatabase.getInstance(context);
@@ -294,4 +311,59 @@ public class Utilities {
         return BASE_URL;
 
     }
+    private static String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return sb.toString();
+    }
+
+    public static class NetworkDarkWeatherCall extends AsyncTask<String, String, JSONObject>{
+
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            String response = null;
+            JSONObject jsonObject = null;
+            try {
+                URL url = new URL(strings[0]);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                // read the response
+                InputStream in = new BufferedInputStream(conn.getInputStream());
+                response = convertStreamToString(in);
+                jsonObject= new JSONObject(response);
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "MalformedURLException: " + e.getMessage());
+            } catch (ProtocolException e) {
+                Log.e(TAG, "ProtocolException: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e(TAG, "IOException: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e(TAG, "Exception: " + e.getMessage());
+            }
+            return jsonObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            super.onPostExecute(jsonObject);
+        }
+    }
+
+
 }

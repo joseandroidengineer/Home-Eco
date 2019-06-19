@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -119,17 +120,18 @@ public class ChoreDetailFragment extends Fragment {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},1);
-        }else{
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener((Executor) this, new OnSuccessListener<Location>() {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        } else {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(AppExecutors.getInstance().mainThread(), new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    if(location!=null){
-                        longitude =  location.getLongitude();
+                    if (location != null) {
+                        longitude = location.getLongitude();
                         latitude = location.getLatitude();
                     }
                 }
             });
+            Toast.makeText(getContext(), Utilities.BASE_URL+ latitude+","+longitude,Toast.LENGTH_LONG).show();
         }
 
 
@@ -140,19 +142,42 @@ public class ChoreDetailFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    bundle.putInt("choreId",choreDetails.getId());
+                    bundle.putInt("choreId", choreDetails.getId());
                     Intent intent = new Intent(getContext(), PersonListActivity.class);
-                    intent.putExtra("choreIdBundle",bundle);
+                    intent.putExtra("choreIdBundle", bundle);
                     startActivity(intent);
                 }
             });
-            if(choreDetails.isCompleted()){
+            if (choreDetails.isCompleted()) {
                 imageView.setImageResource(R.drawable.baseline_check_24);
-            }else{
+            } else {
                 imageView.setImageResource(R.drawable.baseline_close_24);
             }
         }
         return rootView;
+    }
+
+    private void getLngLat(Context context) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(AppExecutors.getInstance().mainThread(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -160,7 +185,8 @@ public class ChoreDetailFragment extends Fragment {
         switch (requestCode){
             case 1:
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //TODO: Weather API stuff
+                    getLngLat(getContext());
+                    Toast.makeText(getContext(), Utilities.BASE_URL+ latitude+","+longitude,Toast.LENGTH_LONG).show();
                 }else{
                     Toast.makeText(getContext(), "Permission denied, to access our weather feature please enable locations", Toast.LENGTH_LONG).show();
                 }
