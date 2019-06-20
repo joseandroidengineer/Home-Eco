@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,16 +28,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jge.homeeco.Adapters.ChoreAdapter;
 import com.jge.homeeco.Adapters.PersonAdapter;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
+import com.jge.homeeco.Models.DarkWeather;
 import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.Models.Prize;
 import com.jge.homeeco.ViewModels.ChoreViewModel;
 import com.jge.homeeco.ViewModels.PersonViewModel;
 import com.jge.homeeco.dummy.DummyContent;
 
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +70,8 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
     private boolean mTwoPane;
     private AppDatabase mChoreDatabase;
     private ArrayList<Person> people;
+    public static DarkWeather darkWeather;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,9 +139,13 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
                 alertDialog.show();
             }
         });
+        new NetworkDarkWeatherCall().execute(Utilities.BASE_URL);
+
 
         //RecyclerView personList = findViewById(R.id.chore_list);
         //setUpPersonAdapterAndRecyclerView(personList);
+
+
     }
 
     @Override
@@ -229,6 +249,47 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         return false;
     }
 
+    private class NetworkDarkWeatherCall extends AsyncTask<String, Integer, JSONObject> {
+        public Gson gson;
+
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            String response = null;
+            JSONObject jsonObject = null;
+            try {
+                URL url = new URL(strings[0]);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                // read the response
+                InputStream in = new BufferedInputStream(conn.getInputStream());
+                response = Utilities.convertStreamToString(in);
+                jsonObject= new JSONObject(response);
+            } catch (MalformedURLException e) {
+                Log.e(Utilities.TAG, "MalformedURLException: " + e.getMessage());
+            } catch (ProtocolException e) {
+                Log.e(Utilities.TAG, "ProtocolException: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e(Utilities.TAG, "IOException: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e(Utilities.TAG, "Exception: " + e.getMessage());
+            }
+            return jsonObject;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            super.onPostExecute(jsonObject);
+            GsonBuilder builder = new GsonBuilder();
+            gson = builder.create();
+            darkWeather = gson.fromJson(jsonObject.toString(), DarkWeather.class);
+        }
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layoutA);
@@ -252,6 +313,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toast.makeText(this,"The current temperature is :"+darkWeather.getTemperature(),Toast.LENGTH_LONG).show();
             return true;
         }
 

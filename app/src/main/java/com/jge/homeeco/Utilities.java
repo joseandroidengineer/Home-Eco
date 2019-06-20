@@ -16,9 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.jge.homeeco.Database.AppDatabase;
 import com.jge.homeeco.Models.Chore;
+import com.jge.homeeco.Models.DarkWeather;
 import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.Models.Prize;
 import com.jge.homeeco.ViewModels.PersonViewModel;
@@ -39,8 +42,9 @@ import java.net.URL;
 public class Utilities {
 
     private static AppDatabase mChoreDatabase;
-    public static String BASE_URL = "https://api.darksky.net/forecast/53a4a3405d35764d25704f64c504dff7/";
-    private static final String TAG = NetworkDarkWeatherCall.class.getSimpleName();
+    public static String BASE_URL = "https://api.darksky.net/forecast/53a4a3405d35764d25704f64c504dff7/40.8417176,-73.917832";
+    public static final String TAG = ChoreListActivity.class.getSimpleName();
+    private Gson gson;
 
 
     public static android.support.v7.app.AlertDialog.Builder createAlertDialog(String title, final Context context, final Class activityToBeCalled, String positive, String negative, final String toastCancelled, final String toastPositive, final String toastConditional){
@@ -311,7 +315,7 @@ public class Utilities {
         return BASE_URL;
 
     }
-    private static String convertStreamToString(InputStream is) {
+    public static String convertStreamToString(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
 
@@ -333,37 +337,7 @@ public class Utilities {
         return sb.toString();
     }
 
-    public static class NetworkDarkWeatherCall extends AsyncTask<String, String, JSONObject>{
 
-        @Override
-        protected JSONObject doInBackground(String... strings) {
-            String response = null;
-            JSONObject jsonObject = null;
-            try {
-                URL url = new URL(strings[0]);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                // read the response
-                InputStream in = new BufferedInputStream(conn.getInputStream());
-                response = convertStreamToString(in);
-                jsonObject= new JSONObject(response);
-            } catch (MalformedURLException e) {
-                Log.e(TAG, "MalformedURLException: " + e.getMessage());
-            } catch (ProtocolException e) {
-                Log.e(TAG, "ProtocolException: " + e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG, "IOException: " + e.getMessage());
-            } catch (Exception e) {
-                Log.e(TAG, "Exception: " + e.getMessage());
-            }
-            return jsonObject;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            super.onPostExecute(jsonObject);
-        }
-    }
 
 
 }
