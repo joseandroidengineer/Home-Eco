@@ -42,7 +42,7 @@ import java.net.URL;
 public class Utilities {
 
     private static AppDatabase mChoreDatabase;
-    public static String BASE_URL = "https://api.darksky.net/forecast/53a4a3405d35764d25704f64c504dff7/40.8417176,-73.917832";
+    public static String BASE_URL = "https://api.darksky.net/forecast";
     public static final String TAG = ChoreListActivity.class.getSimpleName();
     private Gson gson;
 

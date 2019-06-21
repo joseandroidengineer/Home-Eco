@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 public class DarkWeather implements Parcelable {
 
     @SerializedName("temperature")
-    private double temperature;
+    private float temperature;
 
     @SerializedName("icon")
     private String icon;
@@ -17,7 +17,7 @@ public class DarkWeather implements Parcelable {
         return temperature;
     }
 
-    public void setTemperature(double temperature) {
+    public void setTemperature(float temperature) {
         this.temperature = temperature;
     }
 
@@ -52,7 +52,7 @@ public class DarkWeather implements Parcelable {
     };
 
     private DarkWeather(Parcel in){
-        temperature = in.readDouble();
+        temperature = in.readFloat();
         icon = in.readString();
     }
 }

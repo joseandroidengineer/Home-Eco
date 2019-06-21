@@ -41,6 +41,7 @@ import com.jge.homeeco.ViewModels.ChoreViewModel;
 import com.jge.homeeco.ViewModels.PersonViewModel;
 import com.jge.homeeco.dummy.DummyContent;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -286,7 +287,14 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
             super.onPostExecute(jsonObject);
             GsonBuilder builder = new GsonBuilder();
             gson = builder.create();
-            darkWeather = gson.fromJson(jsonObject.toString(), DarkWeather.class);
+            JSONObject jObj = null;
+            try {
+                jObj = jsonObject.getJSONObject("currently");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            darkWeather = gson.fromJson(jObj.toString(), DarkWeather.class);
+            Log.e("TAG: ", darkWeather.getIcon());
         }
     }
 
@@ -313,7 +321,11 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Toast.makeText(this,"The current temperature is :"+darkWeather.getTemperature(),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"Should navigate to settings",Toast.LENGTH_LONG).show();
+            return true;
+        }
+        if (id == R.id.action_weather) {
+            Toast.makeText(this,"The current temperature is: "+Math.round(darkWeather.getTemperature())+" degrees Fahrenheit",Toast.LENGTH_LONG).show();
             return true;
         }
 
