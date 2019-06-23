@@ -16,4 +16,6 @@
     <string name="title_activity_awards">AwardsActivity</string>
     <string name="title_activity_prize">PrizeActivity</string>
     <string name="weather">Get current temperature</string>
+
+    <string name="api_key">53a4a3405d35764d25704f64c504dff7</string>
 </resources>

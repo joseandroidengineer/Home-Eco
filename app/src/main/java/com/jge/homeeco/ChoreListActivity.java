@@ -1,14 +1,20 @@
 package com.jge.homeeco;
 
+import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,6 +34,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jge.homeeco.Adapters.ChoreAdapter;
@@ -72,19 +85,40 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
     private AppDatabase mChoreDatabase;
     private ArrayList<Person> people;
     public static DarkWeather darkWeather;
+    private LocationRequest locationRequest;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private double longitude;
+    private double latitude;
+    private static String API_KEY;
+    private LocationCallback locationCallback;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nav_drawer_main);
+
+        API_KEY = getResources().getString(R.string.api_key);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null){
+                    return;
+                }
+                longitude = locationResult.getLastLocation().getLongitude();
+                latitude = locationResult.getLastLocation().getLatitude();
+
+            }
+        };
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
         /*****Navigation Drawer*****/
         DrawerLayout drawer = findViewById(R.id.drawer_layoutA);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,toolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -93,12 +127,15 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         /***Navigation Drawer*****/
         String choreManagerName = getIntent().getStringExtra("choreMasterName");
 
-        if(choreManagerName != null){
+        if (choreManagerName != null) {
             toolbar.setTitle(choreManagerName);
             View headerView = navigationView.getHeaderView(0);
             TextView tv = navigationView.findViewById(R.id.chore_master_name);
             tv.setText(choreManagerName);
         }
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         LinearLayout ll = navigationView.findViewById(R.id.add_person);
 
@@ -113,7 +150,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
                         "Cancel",
                         "Person creation cancelled",
                         "Should Create Person",
-                        "You must add a person's name!" ).show();
+                        "You must add a person's name!").show();
             }
         });
 
@@ -140,12 +177,45 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
                 alertDialog.show();
             }
         });
-        new NetworkDarkWeatherCall().execute(Utilities.BASE_URL);
+        if (ActivityCompat.checkSelfPermission(getBaseContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        } else {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(AppExecutors.getInstance().mainThread(), new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        longitude = location.getLongitude();
+                        latitude = location.getLatitude();
+                    }
+                }
+            });
+            new NetworkDarkWeatherCall().execute(Utilities.BASE_URL + "/" + API_KEY + "/" + latitude + "," + longitude);
+            Toast.makeText(getBaseContext(), Utilities.BASE_URL + latitude + "," + longitude, Toast.LENGTH_LONG).show();
+        }
 
 
         //RecyclerView personList = findViewById(R.id.chore_list);
         //setUpPersonAdapterAndRecyclerView(personList);
 
+
+    }
+
+
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
 
     }
 
@@ -332,7 +402,53 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         return super.onOptionsItemSelected(item);
     }
 
-    public static class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    private void getLngLat(Context context) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        startLocationUpdates();
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(AppExecutors.getInstance().mainThread(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                }
+            }
+        });
+
+        fusedLocationProviderClient.getLastLocation().addOnFailureListener(AppExecutors.getInstance().mainThread(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                longitude = 1.0;
+                latitude = 1.0;
+            }
+        });
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 1:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    getLngLat(getBaseContext());
+                    new NetworkDarkWeatherCall().execute(Utilities.BASE_URL+ "/"+API_KEY+"/"+latitude+","+longitude);
+                    Toast.makeText(getBaseContext(), Utilities.BASE_URL+ "/"+API_KEY+"/"+latitude+","+longitude,Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getBaseContext(), "Permission denied, to access our weather feature please enable locations", Toast.LENGTH_LONG).show();
+                }
+        }
+    }
+
+    /**public static class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final ChoreListActivity mParentActivity;
         private final List<DummyContent.DummyItem> mValues;
@@ -398,5 +514,5 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
         }
-    }
+    }*/
 }
