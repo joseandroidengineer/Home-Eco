@@ -44,11 +44,12 @@ public class WidgetService extends RemoteViewsService {
         public void onCreate() {
             //Connect to database
             choreDataBase = AppDatabase.getInstance(context);
+            choreList = ChoreListActivity.getChores();
         }
 
         @Override
         public void onDataSetChanged() {
-            choreList = choreDataBase.choreDao().loadAllChores().getValue();
+            choreList = ChoreListActivity.getChores();
         }
 
         @Override

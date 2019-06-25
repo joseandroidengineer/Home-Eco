@@ -91,6 +91,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
     private double latitude;
     private static String API_KEY;
     private LocationCallback locationCallback;
+    private static List<Chore> choreList;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -229,6 +230,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
             public void onChanged(@Nullable List<Chore> chores) {
                 ArrayList<Chore> choreArrayList = new ArrayList<>(chores);
                 choreAdapter.setChoreData(choreArrayList, getApplicationContext());
+                choreList =choreArrayList;
             }
         });
         RecyclerView recyclerView = findViewById(R.id.chore_list);
@@ -262,6 +264,10 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         recyclerView.setHasFixedSize(true);
         personAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(personAdapter);
+    }
+
+    public static List<Chore> getChores(){
+        return choreList;
     }
 
     @Override
