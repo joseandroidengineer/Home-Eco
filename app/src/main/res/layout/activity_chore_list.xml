@@ -29,6 +29,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <include layout="@layout/chore_list" />
+        <include layout="@layout/empty_content"/>
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton

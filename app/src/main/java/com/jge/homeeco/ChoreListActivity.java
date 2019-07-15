@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -233,12 +234,23 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
                 choreList =choreArrayList;
             }
         });
+        ImageView imageView = findViewById(R.id.empty_content_iv);
+        TextView textView = findViewById(R.id.empty_content_tv);
+
         RecyclerView recyclerView = findViewById(R.id.chore_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         choreAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(choreAdapter);
-
+        if(choreAdapter.getItemCount() != 0){
+            recyclerView.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
+        }else{
+            recyclerView.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
+            textView.setVisibility(View.VISIBLE);
+        }
         RecyclerView personList = findViewById(R.id.person_list);
         setUpPersonAdapterAndRecyclerView(personList);
         super.onResume();

@@ -1,21 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        release {
-            keyAlias 'keyHE'
-            keyPassword 'password'
-            storeFile file('../HEKEY.jks')
-            storePassword 'password'
-        }
-    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.jge.homeeco"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "alpha-1.01"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
