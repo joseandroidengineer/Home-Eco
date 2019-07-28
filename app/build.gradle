@@ -6,8 +6,8 @@ android {
         applicationId "com.jge.homeeco"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 2
-        versionName "alpha-1.01"
+        versionCode 3
+        versionName "alpha-1.02"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
