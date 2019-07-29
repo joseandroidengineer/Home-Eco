@@ -7,28 +7,47 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+import com.jge.homeeco.Adapters.ChoreAdapter;
 import com.jge.homeeco.Database.AppDatabase;
+import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
+import com.jge.homeeco.Models.Prize;
+import com.jge.homeeco.ViewModels.ChoreViewModel;
 import com.jge.homeeco.ViewModels.PersonViewModel;
 
-public class PersonDetailActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class PersonDetailActivity extends AppCompatActivity implements ListItemClickListener {
 
     private AppDatabase database;
     private Person person;
     private TextView amtOfPoints;
     private PersonViewModel personViewModel;
+    private ArrayList<Chore> choreList;
+    private ChoreViewModel choreViewModel;
+    private RecyclerView mChoreRecyclerView;
+    private ChoreAdapter mChoreAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person_detail);
+        LinearLayoutManager layoutManager  = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         person = getIntent().getExtras().getParcelable("person");
         personViewModel = ViewModelProviders.of(this).get(PersonViewModel.class);
+        choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
+        mChoreRecyclerView  = findViewById(R.id.chores_assigned_list);
+        mChoreRecyclerView.setLayoutManager(layoutManager);
+        mChoreRecyclerView.setHasFixedSize(true);
+        mChoreAdapter = new ChoreAdapter(this, false);
         if(getActionBar()!= null){
             getActionBar().setTitle(person.getName());
         }
@@ -48,6 +67,16 @@ public class PersonDetailActivity extends AppCompatActivity {
             }
         });
 
+        choreViewModel.getChores().observe(this, new Observer<List<Chore>>() {
+            @Override
+            public void onChanged(@Nullable List<Chore> chores) {
+                choreList = (ArrayList)chores;
+                mChoreAdapter.setChoreData(choreList,getBaseContext());
+                mChoreAdapter.notifyDataSetChanged();
+            }
+        });
+        mChoreRecyclerView.setAdapter(mChoreAdapter);
+
     }
 
     @Override
@@ -66,7 +95,6 @@ public class PersonDetailActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_award_points) {
-            //TODO: Need to fix saving the points correctly. May need to implement onSavedInstance.
             AlertDialog alertDialog = Utilities.addPoints("Add Points", this,"Add points", "Cancel","Points added", person, "Adding points cancelled","Make sure to add points",amtOfPoints, personViewModel ).create();
             alertDialog.show();
             return true;
@@ -89,5 +117,20 @@ public class PersonDetailActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt("points",person.getPointsAssigned());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onListItemClick(Chore choreIndexClicked) {
+
+    }
+
+    @Override
+    public void onListItemClick(Person personIndexClicked) {
+
+    }
+
+    @Override
+    public void onListItemClick(Prize prizeItemClicked) {
+
     }
 }
