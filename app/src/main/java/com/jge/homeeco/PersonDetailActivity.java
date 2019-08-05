@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.jge.homeeco.Adapters.ChoreAdapter;
 import com.jge.homeeco.Database.AppDatabase;
+import com.jge.homeeco.Database.Converters;
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.Models.Prize;
@@ -43,7 +44,7 @@ public class PersonDetailActivity extends AppCompatActivity implements ListItemC
         LinearLayoutManager layoutManager  = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         person = getIntent().getExtras().getParcelable("person");
         personViewModel = ViewModelProviders.of(this).get(PersonViewModel.class);
-        choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
+        //choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
         mChoreRecyclerView  = findViewById(R.id.chores_assigned_list);
         mChoreRecyclerView.setLayoutManager(layoutManager);
         mChoreRecyclerView.setHasFixedSize(true);
@@ -56,26 +57,33 @@ public class PersonDetailActivity extends AppCompatActivity implements ListItemC
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if(person !=null){
+            personViewModel.getPersonById(person.getId()).observe(this, new Observer<Person>() {
+                @Override
+                public void onChanged(@Nullable Person person) {
+                    if(person != null){
+                        String stringList = person.getChoresAssigned();
+                        choreList = Converters.fromStringChore(stringList);
+                        mChoreAdapter.setChoreData(choreList,getBaseContext());
+                        mChoreAdapter.notifyDataSetChanged();
+                    }
+
+                    if(amtOfPoints != null && person != null){
+                        amtOfPoints.setText("Amount of points: " + person.getPointsAssigned());
+                    }
+                }
+            });
+        }
+
+        mChoreRecyclerView.setAdapter(mChoreAdapter);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        personViewModel.getPersonById(person.getId()).observe(this, new Observer<Person>() {
-            @Override
-            public void onChanged(@Nullable Person person) {
-                if(amtOfPoints != null && person != null){
-                    amtOfPoints.setText("Amount of points: " + person.getPointsAssigned());
-                }
-            }
-        });
 
-        choreViewModel.getChores().observe(this, new Observer<List<Chore>>() {
-            @Override
-            public void onChanged(@Nullable List<Chore> chores) {
-                choreList = (ArrayList)chores;
-                mChoreAdapter.setChoreData(choreList,getBaseContext());
-                mChoreAdapter.notifyDataSetChanged();
-            }
-        });
-        mChoreRecyclerView.setAdapter(mChoreAdapter);
 
     }
 

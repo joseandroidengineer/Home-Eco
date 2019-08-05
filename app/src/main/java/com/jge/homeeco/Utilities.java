@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.jge.homeeco.Database.AppDatabase;
+import com.jge.homeeco.Database.Converters;
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.DarkWeather;
 import com.jge.homeeco.Models.Person;
@@ -37,6 +38,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 public class Utilities {
@@ -180,6 +182,9 @@ public class Utilities {
                     person.setId(generateUIDForPerson(context));
                     person.setPointsAssigned(0);
                     person.setName(personName.getText().toString());
+                    ArrayList<Chore> choreList = new ArrayList<>();
+                    String stringList = Converters.fromArrayList(choreList);
+                    person.setChoresAssigned(stringList);
                     /********************/
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("createdPerson", person);

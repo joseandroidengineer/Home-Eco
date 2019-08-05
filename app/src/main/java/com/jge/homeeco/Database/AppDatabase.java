@@ -17,7 +17,7 @@ import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.Models.Prize;
 
-@Database(entities = {Chore.class, Person.class, Prize.class}, version = 3, exportSchema = false)
+@Database(entities = {Chore.class, Person.class, Prize.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
 
@@ -30,7 +30,7 @@ public abstract class AppDatabase extends RoomDatabase {
         if(sInstance == null){
             synchronized (LOCK){
                 Log.d(LOG_TAG, "Creating new database instance");
-                sInstance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, AppDatabase.DATABASE_NAME).addMigrations(MIGRATION_2_3).build();
+                sInstance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, AppDatabase.DATABASE_NAME).addMigrations(MIGRATION_3_4).build();
             }
         }
         Log.e(LOG_TAG, "Getting the database instance");
@@ -48,6 +48,14 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase database){
             database.execSQL("CREATE TABLE IF NOT EXISTS 'prize'('id' INTEGER NOT NULL," +"'name' TEXT,"+"'points' INTEGER NOT NULL, PRIMARY KEY('id'))");
+        }
+    };
+
+    static final Migration MIGRATION_3_4 = new Migration(3,4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE person "
+                    + " ADD COLUMN choresAssigned TEXT");
         }
     };
 
