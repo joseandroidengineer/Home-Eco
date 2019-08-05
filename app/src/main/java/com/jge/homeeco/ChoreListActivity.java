@@ -223,7 +223,17 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
 
     @Override
     protected void onResume() {
-        final ChoreAdapter  choreAdapter = new ChoreAdapter(this, mTwoPane);
+        final ChoreAdapter  choreAdapter = new ChoreAdapter(this, true);
+        final ImageView imageView = findViewById(R.id.empty_content_iv);
+        final TextView textView = findViewById(R.id.empty_content_tv);
+        final RecyclerView recyclerView = findViewById(R.id.chore_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        choreAdapter.notifyDataSetChanged();
+        recyclerView.setAdapter(choreAdapter);
+        RecyclerView personList = findViewById(R.id.person_list);
+
+
         mChoreDatabase = AppDatabase.getInstance(this);
         ChoreViewModel choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
         choreViewModel.getChores().observe(this, new Observer<List<Chore>>() {
@@ -231,27 +241,20 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
             public void onChanged(@Nullable List<Chore> chores) {
                 ArrayList<Chore> choreArrayList = new ArrayList<>(chores);
                 choreAdapter.setChoreData(choreArrayList, getApplicationContext());
-                choreList =choreArrayList;
+                choreList = choreArrayList;
+                if(choreAdapter.getItemCount()!=0){
+                    recyclerView.setVisibility(View.VISIBLE);
+                    imageView.setVisibility(View.GONE);
+                    textView.setVisibility(View.GONE);
+                }else{
+                    recyclerView.setVisibility(View.GONE);
+                    imageView.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.VISIBLE);
+                }
             }
         });
-        ImageView imageView = findViewById(R.id.empty_content_iv);
-        TextView textView = findViewById(R.id.empty_content_tv);
 
-        RecyclerView recyclerView = findViewById(R.id.chore_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-        choreAdapter.notifyDataSetChanged();
-        recyclerView.setAdapter(choreAdapter);
-        if(choreAdapter.getItemCount() != 0){
-            recyclerView.setVisibility(View.VISIBLE);
-            imageView.setVisibility(View.GONE);
-            textView.setVisibility(View.GONE);
-        }else{
-            recyclerView.setVisibility(View.GONE);
-            imageView.setVisibility(View.VISIBLE);
-            textView.setVisibility(View.VISIBLE);
-        }
-        RecyclerView personList = findViewById(R.id.person_list);
+
         setUpPersonAdapterAndRecyclerView(personList);
         super.onResume();
     }

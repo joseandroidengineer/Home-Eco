@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.jge.homeeco.Adapters.PersonAdapter;
+import com.jge.homeeco.Database.Converters;
 import com.jge.homeeco.Models.Chore;
 import com.jge.homeeco.Models.Person;
 import com.jge.homeeco.Models.Prize;
@@ -42,13 +43,6 @@ public class PersonListActivity extends AppCompatActivity implements ListItemCli
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("choreIdBundle");
         id = bundle.getInt("choreId");
-        choreViewModel.getChoreById(id).observe(this, new Observer<Chore>() {
-            @Override
-            public void onChanged(@Nullable Chore chore) {
-                choreAssigned = chore;
-            }
-        });
-
         personViewModel.getPersons().observe(this, new Observer<List<Person>>() {
             @Override
             public void onChanged(@Nullable List<Person> people) {
@@ -69,10 +63,22 @@ public class PersonListActivity extends AppCompatActivity implements ListItemCli
             @Override
             public void onChanged(@Nullable Chore chore) {
                 chore.setRoommateAssigned(personIndexClicked.getName());
+                ArrayList<Chore> choreArrayList;
+                String stringChoreList;
+                if(personIndexClicked.getChoresAssigned() == null){
+                    choreArrayList = new ArrayList<>();
+                }else{
+                    stringChoreList = personIndexClicked.getChoresAssigned();
+                    choreArrayList = Converters.fromStringChore(stringChoreList);
+                }
+                choreArrayList.add(chore);
+                String string = Converters.fromArrayList(choreArrayList);
+                personIndexClicked.setChoresAssigned(string);
+                personViewModel.updatePerson(personIndexClicked);
                 Toast.makeText(getApplicationContext(),chore.getTitle() +" assigned to "+personIndexClicked.getName(),Toast.LENGTH_LONG).show();
             }
         });
-        choreViewModel.updateChore(choreAssigned);
+
         Log.e("PERSON:", personIndexClicked.getName());
         onBackPressed();
 

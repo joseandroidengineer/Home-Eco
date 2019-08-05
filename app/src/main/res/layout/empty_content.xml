@@ -6,6 +6,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
+        android:visibility="gone"
         android:background="@drawable/ic_chore_empty_bg" />
 
     <TextView
@@ -15,6 +16,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_marginTop="128dp"
+        android:visibility="gone"
         android:text="Tap the blue button to add a chore"
         android:textSize="32sp" />
 

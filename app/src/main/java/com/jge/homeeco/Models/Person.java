@@ -14,9 +14,18 @@ public class Person implements Parcelable {
     @PrimaryKey(autoGenerate =  true)
     private int id;
     private int pointsAssigned;
+    private String choresAssigned;
 
     public Person(){
 
+    }
+
+    public String getChoresAssigned() {
+        return choresAssigned;
+    }
+
+    public void setChoresAssigned(String choresAssigned) {
+        this.choresAssigned = choresAssigned;
     }
 
     public String getName() {
@@ -54,6 +63,7 @@ public class Person implements Parcelable {
         parcel.writeInt(id);
         parcel.writeString(name);
         parcel.writeInt(pointsAssigned);
+        parcel.writeString(choresAssigned);
 
     }
 
@@ -71,5 +81,6 @@ public class Person implements Parcelable {
         id = in.readInt();
         name = in.readString();
         pointsAssigned = in.readInt();
+        choresAssigned = in.readString();
     }
 }

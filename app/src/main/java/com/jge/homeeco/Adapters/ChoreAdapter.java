@@ -33,7 +33,13 @@ public class ChoreAdapter  extends RecyclerView.Adapter<ChoreAdapterViewHolder>{
     @Override
     public ChoreAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.chore_list_content;
+        int layoutIdForListItem;
+        if(mPane){
+            layoutIdForListItem = R.layout.chore_list_content;
+
+        }else{
+            layoutIdForListItem = R.layout.person_chore_list_item;
+        }
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(layoutIdForListItem,viewGroup, false);
         return new ChoreAdapterViewHolder(view, mOnClickListener, chores);
