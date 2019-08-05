@@ -234,6 +234,7 @@ public class ChoreListActivity extends AppCompatActivity implements ListItemClic
         RecyclerView personList = findViewById(R.id.person_list);
 
 
+        //Example
         mChoreDatabase = AppDatabase.getInstance(this);
         ChoreViewModel choreViewModel = ViewModelProviders.of(this).get(ChoreViewModel.class);
         choreViewModel.getChores().observe(this, new Observer<List<Chore>>() {
